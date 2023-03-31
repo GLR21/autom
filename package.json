@@ -1,0 +1,29 @@
+{
+  "name": "autom",
+  "version": "1.0.0",
+  "description": "An ERP made for auto part dealers",
+  "repository": {
+    "url": ""
+  },
+  "main": "build/main.js",
+  "scripts": {
+    "dev": "npx tsc -p .; node build/main.js"
+  },
+  "author": "Gabriel Lange Ramos",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.23",
+    "@types/pg": "^8.6.5",
+    "chalk": "^4.1.2",
+    "dayjs": "^1.11.7",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2",
+    "pdfmake": "^0.2.5",
+    "pg": "^8.7.3",
+    "pgtools": "^0.3.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.2",
+    "zod": "^3.21.4"
+  }
+}
