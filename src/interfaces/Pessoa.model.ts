@@ -4,7 +4,7 @@ export interface Pessoa
     id?: number|undefined;
     nome: string;
     email: string;
-    senha: string;
+    senha?: string|undefined;
     telefone: string;
     sys_auth?: Number|undefined;
     cep:string;

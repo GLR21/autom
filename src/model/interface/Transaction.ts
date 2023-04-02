@@ -26,7 +26,7 @@ class Transaction
 						(
 							( err )=>
 							{
-								console.log( err );
+								throw err;
 							}
 						);
 	}

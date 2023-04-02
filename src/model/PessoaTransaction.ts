@@ -1,5 +1,5 @@
 // import { Pessoa } from "../objects/Pessoa";
-import { Pessoa } from "../models/Pessoa.model";
+import { Pessoa } from "../interfaces/Pessoa.model";
 import { JUtil } from "../util/JUtil";
 import Logging from "../util/Logging";
 import { Transaction } from "./interface/Transaction";
@@ -18,73 +18,45 @@ class PessoaTransaction
         super();
     }
 
-    async create( pessoa:Pessoa )
-    {
-
-    }
-
     async store( pessoa:Pessoa)
     {
         let insert;
-        
-        if( pessoa.id != null )
-        {
-            insert = `UPDATE 
-                        pm_pessoa 
-                            set `;
+     
+            insert =
             
-            insert+= `nome='${pessoa.nome}',`;
-            insert+= `email='${pessoa.email}',`;
-            if( pessoa.senha != null )
-            {
-                insert+= `senha='${JUtil.hashString( pessoa.senha, JUtil.SHA256 )}',`;
-            }
-            insert+=`telefone='${pessoa.telefone}',`;
-            insert+=`sys_auth=${pessoa.sys_auth},`;
-            insert+=`cep='${pessoa.cep}',`;
-            insert+=`rua='${pessoa.rua}',`;
-            insert+=`bairro='${pessoa.bairro}',`;
-            insert+=`numero_endereco=${pessoa.numero_endereco},`;
-            insert+=`ref_cidade='${pessoa.ref_cidade}',`;
-            insert+=`tipo_pessoa=${pessoa.tipo_pessoa}`;
-            insert+= ` where id=${pessoa.id}`;
-        }
-        else
-        {
-            insert = `INSERT INTO 
-            pm_pessoa 
-            ( 
-                nome, 
-                email, 
-                senha, 
-                telefone, 
-                sys_auth,
-                cep,
-                rua,
-                bairro,
-                numero_endereco,
-                ref_cidade,
-                tipo_pessoa 
-            ) 
-            values 
-            ( 
-                '${pessoa.nome}', 
-                '${pessoa.email}',
-                '${ JUtil.hashString( pessoa.senha, JUtil.SHA256 ) }',
-                '${pessoa.telefone}',
-                ${pessoa.sys_auth},
-                '${pessoa.cep}',
-                '${pessoa.rua}',
-                '${pessoa.bairro}',
-                ${pessoa.numero_endereco},
-                '${pessoa.ref_cidade}',
-                ${pessoa.tipo_pessoa}
-            ) RETURNING id`;
-        }
-        
+            `INSERT INTO 
+                pm_pessoa 
+                ( 
+                    nome, 
+                    email, 
+                    senha, 
+                    telefone, 
+                    sys_auth,
+                    cep,
+                    rua,
+                    bairro,
+                    numero_endereco,
+                    ref_cidade,
+                    tipo_pessoa 
+                ) 
+                values 
+                ( 
+                    '${pessoa.nome}', 
+                    '${pessoa.email}',
+                    '${ JUtil.hashString( pessoa.senha, JUtil.SHA256 ) }',
+                    '${pessoa.telefone}',
+                    ${pessoa.sys_auth},
+                    '${pessoa.cep}',
+                    '${pessoa.rua}',
+                    '${pessoa.bairro}',
+                    ${pessoa.numero_endereco},
+                    '${pessoa.ref_cidade}',
+                    ${pessoa.tipo_pessoa}
+                ) RETURNING id`;
+     
         try
         {
-            return await super.query( insert ).then( ( res )=>{ return true } );
+            return await super.query( insert ).then( ( res )=>{ return true } ).catch( ( e )=>{ throw e });
         }
         catch ( e:any )
         {
@@ -100,113 +72,103 @@ class PessoaTransaction
     {
         let getAll = 'Select * from pm_pessoa order by id asc;';
 
-        // return await super
-        //             .query( 'Select * from pm_pessoa order by id asc;' )
-        //             .then
-        //             ( 
-        //                 ( res )=>
-        //                 {
-        //                     let array_pessoa = new Array();
-        //                     if( res.rows.length != 0 )
-        //                     {
-        //                         res.rows.forEach
-        //                         (
-        //                             element => 
-        //                             {
-        //                                 array_pessoa.push
-        //                                 ( 
-        //                                     new Pessoa
-        //                                         ( 
-        //                                             element.id,
-        //                                             element.nome,
-        //                                             element.email,
-        //                                             element.senha,
-        //                                             element.telefone,
-        //                                             element.sys_auth,
-        //                                             element.cep, element.rua,
-        //                                             element.bairro,
-        //                                             element.numero_endereco,
-        //                                             element.cidade,
-        //                                             element.estado,
-        //                                             element.tipo_pessoa 
-        //                                         )  
-        //                                 );
-        //                             }
-        //                         );
-        //                     }
-        //                     return array_pessoa
-        //                 } 
-        //             );
+        try
+        {
+            return await super
+                        .query( getAll )
+                        .then
+                        ( 
+                            ( res )=>
+                            {
+                                let array_pessoa = new Array();
+                                if( res.rows.length != 0 )
+                                {
+                                    res.rows.forEach
+                                    (
+                                        element => 
+                                        {
+                                            array_pessoa.push
+                                            ( 
+                                                {
+                                                    "id": element.id,
+                                                    "nome": element.nome,
+                                                    "email": element.email,
+                                                    "senha": element.senha,
+                                                    "telefone": element.telefone,
+                                                    "sys_auth": element.sys_auth,
+                                                    "cep": element.cep,
+                                                    "rua": element.rua,
+                                                    "bairro": element.bairro,
+                                                    "numero_endereco": element.numero_endereco,
+                                                    "ref_cidade": element.ref_cidade,
+                                                    "tipo_pessoa": element.tipo_pessoa
+                                                }
+                                            );
+                                        }
+                                    );
+                                }
+                                return array_pessoa
+                            } 
+                        ).catch( ( e )=>{ throw e } );
+
+        }
+        catch( e:any )
+        {
+            Logging.error( e.message );
+            throw e;
+        }
+
     }
 
     async get( id:Number )
     {
         let query = `Select * from pm_pessoa where id = ${id}`;
         
-        // return await super
-        //             .query( query )
-        //             .then
-        //             ( 
-        //                 async ( res )=>
-        //                 { 
-        //                     let pessoa;
-
-        //                     res.rows.forEach(element =>
-        //                     {
-        //                         pessoa = new Pessoa
-        //                         ( 
-        //                             element.id,
-        //                             element.nome,
-        //                             element.email,
-        //                             element.senha,
-        //                             element.telefone,
-        //                             element.sys_auth,
-        //                             element.cep, 
-        //                             element.rua,
-        //                             element.bairro,
-        //                             element.numero_endereco,
-        //                             element.cidade,
-        //                             element.estado,
-        //                             element.tipo_pessoa 
-        //                         );        
-        //                     });
-
-        //                     var transaction;
-
-        //                     if( pessoa.tipo_pessoa == 0 )
-        //                     {
-        //                         transaction = new PessoaFisicaTransaction();
-        //                     }
-        //                     else
-        //                     {
-        //                         transaction = new PessoaJuridicaTransaction();
-        //                     }
-
-        //                     return await transaction.get( pessoa );
-        //                 } 
-        //             );
+        try
+        {
+            return await super
+                        .query( query )
+                        .then
+                        ( 
+                            async ( res )=>
+                            { 
+                                let pessoa;
+    
+                                res.rows.forEach( element =>
+                                {
+                                    pessoa =
+                                    {
+                                        "id": element.id,
+                                        "nome": element.nome,
+                                        "email": element.email,
+                                        "senha": element.senha,
+                                        "telefone": element.telefone,
+                                        "sys_auth": element.sys_auth,
+                                        "cep": element.cep,
+                                        "rua": element.rua,
+                                        "bairro": element.bairro,
+                                        "numero_endereco": element.numero_endereco,
+                                        "ref_cidade": element.ref_cidade,
+                                        "tipo_pessoa": element.tipo_pessoa
+                                    }       
+                                });
+    
+                                return pessoa;
+                            } 
+                        );
+        }
+        catch( e:any )
+        {
+            Logging.error( e.message );
+            throw e;
+        }
     }
 
-    async delete( parameter:any )
+    async delete( id:Number )
     {
-        let delete_query = `DELETE FROM pm_pessoa where id=${parameter.id}`;
-
-        var transaction;
-
-        var is_deleted = false;
-
-        if( parameter.tipo_pessoa == 0 )
-        {
-            transaction = new PessoaFisicaTransaction();
-        }
-        else
-        {
-            transaction = new PessoaJuridicaTransaction();
-        }
-
-        is_deleted = await transaction.delete( parameter.id );
+        let delete_query = `DELETE FROM pm_pessoa where id=${id}`;
         
-        if( is_deleted )
+        try
         {
             return await super
                         .query( delete_query )
@@ -216,11 +178,43 @@ class PessoaTransaction
                             { 
                                 return true; 
                             } 
-                        );
-
+                        ).catch( ( e )=>{ throw e } );
         }
+        catch( e:any )
+        {
+            Logging.error( e.message );
+            throw e;
+        }
+    }
 
-        return is_deleted
+    async update( pessoa:Pessoa )
+    {
+        let update_query =
+            `
+                UPDATE
+                    pm_pessoa
+                        set
+                            nome='${pessoa.nome}',
+                            email='${pessoa.email}',
+                            telefone='${pessoa.telefone}',
+                            sys_auth=${pessoa.sys_auth},
+                            cep='${pessoa.cep}',
+                            rua='${pessoa.rua}',
+                            bairro='${pessoa.bairro}',
+                            numero_endereco=${pessoa.numero_endereco},
+                            ref_cidade='${pessoa.ref_cidade}',
+                            tipo_pessoa=${pessoa.tipo_pessoa}
+                        where id=${pessoa.id}`;
+        
+        try
+        {
+            return await super.query( update_query ).then( ( res )=>{ return true } ).catch( ( e )=>{ throw e } );
+        }
+        catch( e:any )
+        {
+            Logging.error( e.message );
+            throw e;
+        }
     }
 
     async onLogin( parameter:any )

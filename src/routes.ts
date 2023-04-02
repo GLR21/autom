@@ -1,7 +1,7 @@
 import { Express, Request, Response } from "express";
-import { createPessoaHandler } from "./controller/Pessoa.controller";
+import { createPessoaHandler, deletePessoaHandler, getAllPessoaHandler, getPessoaHandler, updatePessoaHandler } from "./controller/Pessoa.controller";
 import validate from "./middleware/resourceValidator";
-import { createPessoaSchema } from "./schema/Pessoa.schema";
+import { createPessoaSchema, updatePessoaSchema } from "./schema/Pessoa.schema";
 function routes ( app: Express )
 {
 	app.get
@@ -11,7 +11,12 @@ function routes ( app: Express )
 		res.sendStatus( 200 )
 	);
 
-	app.post('/app/pessoa', validate( createPessoaSchema ), createPessoaHandler);
+	app.get( '/app/getpessoa' , getPessoaHandler   );
+	app.get( '/app/getpessoas', getAllPessoaHandler);
+	app.post('/app/createpessoa' , validate( createPessoaSchema ), createPessoaHandler );
+	app.put( '/app/updatepessoa' , validate( updatePessoaSchema ), updatePessoaHandler );
+	app.delete( '/app/deletepessoa', deletePessoaHandler );
+	
 }
 
 export default routes;
