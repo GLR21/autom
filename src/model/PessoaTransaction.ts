@@ -1,4 +1,3 @@
-// import { Pessoa } from "../objects/Pessoa";
 import { Pessoa } from "../interfaces/Pessoa.model";
 import { JUtil } from "../util/JUtil";
 import Logging from "../util/Logging";
