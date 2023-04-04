@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import Logging from '../util/Logging';
 import { createEstado, deleteEstado, getAllEstados, getEstado, updateEstado } from '../service/Estado.service';
+import { CreateEstadoSchema } from '../schema/Estado.schema';
 
-export async function createEstadoHandler( req:Request, res:Response )
+export async function createEstadoHandler( req:Request<{},{},CreateEstadoSchema['body']>, res:Response )
 {
 	try
 	{
@@ -58,7 +59,7 @@ export async function deleteEstadoHandler( req:Request, res:Response )
 	}
 }
 
-export async function updateEstadoHandler( req:Request, res:Response )
+export async function updateEstadoHandler( req:Request<{},{},CreateEstadoSchema['body']>, res:Response )
 {
 	try
 	{
