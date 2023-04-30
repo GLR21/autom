@@ -1,5 +1,5 @@
 import { PessoaTransaction } from "../model/PessoaTransaction";
-import { Pessoa } from "../interfaces/Pessoa.model";
+import { Pessoa, PessoaLogin } from "../interfaces/Pessoa.model";
 
 
 
@@ -66,6 +66,20 @@ export async function updatePessoa( input:Pessoa )
 	{
 		let pessoaTransaction = new PessoaTransaction();
 		let pessoa = await pessoaTransaction.update( input );
+		return pessoa;
+	}
+	catch (e:any)
+	{
+		throw new Error(e);
+	}
+}
+
+export async function loginPessoa( input:PessoaLogin )
+{
+	try
+	{
+		let pessoaTransaction = new PessoaTransaction();
+		let pessoa = await pessoaTransaction.getPessoaLogin( input );
 		return pessoa;
 	}
 	catch (e:any)

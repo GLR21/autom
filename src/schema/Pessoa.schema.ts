@@ -46,6 +46,21 @@ export const updatePessoaSchema = z.object
 	}
 );
 
+export const loginPessoaSchema = z.object
+(
+	{
+		body:z.object
+		(
+			{
+				email: string( { required_error: 'E-mail é obrigatório' } ).email( 'Email inválido' ),
+				senha: string( { required_error: 'Senha é Obrigatória' } ).nonempty()
+			}
+		)
+	}
+)
+
 export type CreatePessoaSchema = z.infer<typeof createPessoaSchema>;
 
 export type UpdatePessoaSchema = z.infer<typeof updatePessoaSchema>;
+
+export type LoginPessoaSchema = z.infer<typeof loginPessoaSchema>;

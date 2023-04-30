@@ -216,10 +216,17 @@ class PessoaTransaction
         }
     }
 
-    async onLogin( parameter:any )
+    async getPessoaLogin( parameter:any )
     {
-        var query = `select * from pm_pessoa where email= '${parameter.email}' and senha = '${JUtil.hashString( parameter.senha, JUtil.SHA256 )}'`;
-        return await super.query(  query ).then( ( res )=> {  return res.rows.length != 0 } );
+        let query =
+            `select
+                *
+            from
+                pm_pessoa
+            where
+                pm_pessoa.email= '${parameter.email}'
+                and pm_pessoa.senha = '${JUtil.hashString( parameter.senha, JUtil.SHA256 )}'`;
+        return await super.query(  query ).then( ( res )=> {  return res.rows[0] } );
     }
 }
 

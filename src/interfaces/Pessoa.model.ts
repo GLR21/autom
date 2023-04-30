@@ -15,3 +15,9 @@ export interface Pessoa
     tipo_pessoa?:Number|undefined;
 
 }
+
+export interface PessoaLogin
+{
+    email: string;
+    senha: string;
+}
