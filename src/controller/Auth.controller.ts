@@ -42,7 +42,7 @@ export async function loginPessoaHandler(req: Request<{}, {}, LoginPessoaSchema[
 			// response.cookie( "jwt", refreshToken, { httpOnly: true, maxAge: 2*60*1000 } );
 			// 2 minutos, para testes
 			
-			return response.status( 200 ).send( { accessToken: accessToken } );
+			return response.status( 200 ).send( { pessoa_id: pessoa.id, pessoa_email: pessoa.email, accessToken: accessToken } );
 		}
 
 		
@@ -58,7 +58,6 @@ export async function refreshTokenHandler(req: Request, res: Response)
 {
 	try
 	{
-		
 		const cookies = req.cookies;
 		
 		if( typeof cookies.jwt === 'undefined' )
@@ -71,9 +70,9 @@ export async function refreshTokenHandler(req: Request, res: Response)
 		const payload = decode( refreshToken );
 		
 		//@ts-ignore
-		const user = await getPessoa( payload?.user_id );
+		const pessoa = await getPessoa( payload?.user_id );
 
-		if( !user )
+		if( !pessoa )
 		{
 			return res.sendStatus( 401 );	
 		}
@@ -84,7 +83,7 @@ export async function refreshTokenHandler(req: Request, res: Response)
 			process.env.REFRESH_TOKEN_SECRET as Secret,
 			(err:any, decode:any) =>
 			{
-				if( err || decode.user_id !== user.id )
+				if( err || decode.user_id !== pessoa.id )
 				{
 					return res.sendStatus( 403 );
 				}
@@ -100,7 +99,7 @@ export async function refreshTokenHandler(req: Request, res: Response)
 					}
 				);
 
-				return res.status( 200 ).send( { accessToken: accessToken } );
+				return res.status( 200 ).send( { pessoa_id: pessoa.id, pessoa_email: pessoa.email, accessToken: accessToken } );
 			}
 		)
 	}
@@ -116,7 +115,6 @@ export async function logoutPessoaHandler(req: Request, res: Response)
 	try
 	{
 		// Deletar Access Token no client-side antes de chamar esta rota
-
 		const cookies = req.cookies;
 		
 		if( typeof cookies.jwt === 'undefined' )
