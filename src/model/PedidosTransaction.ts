@@ -1,24 +1,24 @@
 import { Transaction } from "./interface/Transaction";
-import { Pedidos }     from "../objects/Pedidos";
+import { Pedido } from "../interfaces/Pedido.model";
 import { PecasPedidos } from "../objects/PecasPedidos";
 
 class PedidosTransaction 
 	extends
 		Transaction
 			implements
-				TransactionInterface<Pedidos>
+				TransactionInterface<Pedido>
 {
 	constructor()
 	{
 		super();
 	}
 
-	async store(parameter: Pedidos)
+	async store(parameter: Pedido)
 	{
 		var insert = `Insert into pm_pedidos ( total,status ) values ( ${ parameter.total }, ${ parameter.status } ) RETURNING id`;
 		let update = false;
 
-		if( parameter.id )
+		if( typeof parameter.id != 'undefined' )
 		{
 			update = true;
 			insert = `UPDATE pm_pedidos set total = ${ parameter.total }, status = ${ parameter.status } where id = ${ parameter.id }`;
@@ -83,16 +83,14 @@ class PedidosTransaction
 
 	async get(parameter: any)
 	{
-		return await super.query( `SELECT * from pm_pedidos where id = ${ parameter.id }` )
+		return await super.query( `SELECT * from pm_pedidos where id = ${ parameter }` )
 		.then
 		(
 			async( res )=>
 			{
 				return await Promise.all( res.rows.map( async( pedidoReturn )=>
 				{
-
-
-					let pedido = new Pedidos( pedidoReturn.id, 0, pedidoReturn.total, [], pedidoReturn.status );
+					let pedido = { id: pedidoReturn.id, ref_pessoa: 0, total: pedidoReturn.total, pecasPedido: new Array() , status: pedidoReturn.status };
 
 					let pecas = await super.query( `SELECT * from pm_pedidos_pecas where ref_pedido = ${ pedidoReturn.id }` );
 
@@ -126,13 +124,13 @@ class PedidosTransaction
 				await Promise.all( res.rows.map( async( pedidoObj )=>
 				{
 
-					var pedido = new Pedidos( pedidoObj.id,  0 , pedidoObj.total, [], pedidoObj.status  );
+					let pedido = { id: pedidoObj.id, ref_pessoa: 0, total: pedidoObj.total, pecasPedido: new Array() , status: pedidoObj.status };
 
-					var query_pessoa = `SELECT ref_pessoa from pm_pedidos_pessoa where ref_pedido = ${pedido.id}`;
-					var query_peca   = `SELECT ref_peca, quantidade from pm_pedidos_pecas where ref_pedido = ${pedido.id}`;
+					let query_pessoa = `SELECT ref_pessoa from pm_pedidos_pessoa where ref_pedido = ${pedido.id}`;
+					let query_peca   = `SELECT ref_peca, quantidade from pm_pedidos_pecas where ref_pedido = ${pedido.id}`;
 
-					var id_pessoa;
-					var pm_pedidos_pecas;
+					let id_pessoa;
+					let pm_pedidos_pecas;
 
 					if( typeof param != 'undefined' )
 					{
@@ -183,7 +181,6 @@ class PedidosTransaction
 						pedido.ref_pessoa = id_pessoa.rows[0].ref_pessoa;
 		
 						pedidos.push( pedido );
-
 					}
 
 				} ) );

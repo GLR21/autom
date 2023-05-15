@@ -66,13 +66,13 @@ class PecasTransaction
 	}
 	async get(parameter:any)
 	{
-		var query = `SELECT * from ${ PecasTransaction.TABLE_NAME } where id= ${parameter.id}`;
+		let query = `SELECT * from ${ PecasTransaction.TABLE_NAME } where id= ${parameter}`;
 		return await this.query(  query ).
 		then
 		( 
 			( res )=>
 			{
-				 var peca = res.rows[0]; 
+				 let peca = res.rows[0]; 
 				 return new Pecas( peca.id, peca.nome, peca.ref_marca, ( peca.descricao == 'null' ? '' : peca.descricao ) , peca.valor_compra, peca.valor_revenda  );
 			} 
 		);	
