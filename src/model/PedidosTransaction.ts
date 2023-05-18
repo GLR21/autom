@@ -123,7 +123,6 @@ class PedidosTransaction
 
 				await Promise.all( res.rows.map( async( pedidoObj )=>
 				{
-
 					let pedido = { id: pedidoObj.id, ref_pessoa: 0, total: pedidoObj.total, pecasPedido: new Array() , status: pedidoObj.status };
 
 					let query_pessoa = `SELECT ref_pessoa from pm_pedidos_pessoa where ref_pedido = ${pedido.id}`;
@@ -134,10 +133,9 @@ class PedidosTransaction
 
 					if( typeof param != 'undefined' )
 					{
-						
-						if( param.hasOwnProperty('ref_pessoa') )
+						if( param.hasOwnProperty('ref_pessoa') && param.ref_pessoa != null )
 						{
-							if( typeof param.ref_pessoa != 'undefined'  )
+							if( typeof param.ref_pessoa != 'undefined' && param.ref_pessoa != null )
 							{
 								query_pessoa+= ` AND ref_pessoa = ${ param.ref_pessoa }`;
 							}
@@ -145,13 +143,13 @@ class PedidosTransaction
 							id_pessoa = await super.query( query_pessoa );
 							pm_pedidos_pecas = await super.query( query_peca );
 						}
-						else if( param.hasOwnProperty( 'ref_peca' ) )
+						else if( param.hasOwnProperty( 'ref_peca' ) && param.ref_peca != null )
 						{
-							if( typeof param.ref_peca != 'undefined' )
+							if( typeof param.ref_peca != 'undefined' && param.ref_peca != null )
 							{
 								query_peca+= ` AND ref_peca = ${ param.ref_peca }`
 							}
-
+							
 							id_pessoa = await super.query( query_pessoa );
 							pm_pedidos_pecas = await super.query( query_peca );
 						}
@@ -160,7 +158,6 @@ class PedidosTransaction
 							pm_pedidos_pecas = await super.query( query_peca );
 							id_pessoa = await super.query( query_pessoa );	
 						}
-						
 					}
 					else
 					{

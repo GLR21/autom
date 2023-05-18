@@ -1,28 +1,38 @@
 import { RelatorioPecas } from "./RelatorioPecas";
 import { RelatorioPedidos } from "./RelatorioPedidos";
+import { Request, Response } from 'express';
+import {getReportSchema} from '../schema/Report.schema';
+import Logging from '../util/Logging';
 
-class ReportsController
+const RELATORIO_PECAS = 'RelatorioPecas';
+const RELATORIO_PEDIDOS = 'RelatorioPedidos';
+
+export async function generateReportHandler( req:Request<{},{},getReportSchema['body']>, res:Response )
 {
-	public static RELATORIO_PECAS = 'RelatorioPecas';
-	public static RELATORIO_PEDIDOS = 'RelatorioPedidos';
-
-	static async generateReport( report:string, param:null|any )
+	try
 	{
+		let report;
 		let relatorio;
-		let response;
-		switch( report )
+
+		switch( req.body.ref_report )
 		{
-			case this.RELATORIO_PECAS:
-				relatorio = new RelatorioPecas();
-				response = await relatorio.build( param );
+			case RELATORIO_PECAS:
+				relatorio = new RelatorioPecas();		
+				report = await relatorio.build( req.body );
 			break;
-			case this.RELATORIO_PEDIDOS:
+			case RELATORIO_PEDIDOS:
 				relatorio = new RelatorioPedidos();
-				response  = await relatorio.build( param );
+				report = await relatorio.build( req.body );
+			break;
 		}
 
-		return response;
+		console.log( report );
+
+		return res.status( 200 ).send( report );
+	}
+	catch ( err: any )
+	{
+		Logging.error( err.message );
+		return res.status( 409 ).send( err.message );
 	}
 }
-
-export { ReportsController };

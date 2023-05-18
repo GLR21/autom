@@ -39,12 +39,12 @@ class RelatorioPedidos
 		docDefinition.content[0].table['body'] = new Array();
 
 		var tableBody = docDefinition.content[0].table['body'];
-		
 		try
 		{
+			
 			if( pedidosArr.length > 0 )
 			{
-				await Promise.all( pedidosArr.map( async(  pedido:Pedidos )=>
+				await Promise.all( pedidosArr.map( async(  pedido:any )=>
 				{
 					let pessoa = await pessoatransaction.get( pedido.ref_pessoa );
 					let produtos = await this.generateInnerTable( pedido );
@@ -60,17 +60,35 @@ class RelatorioPedidos
 				tableBody.push( [ { text:`Não há pedidos para este filtro.`, bold: true, border:[ false, false, false, false ] }  ] )
 			}
 
-
 			docDefinition['header'] = Relatorio.HEADER;
 			var pdfDoc = printer.createPdfKitDocument( docDefinition );
-			pdfDoc.pipe( fs.createWriteStream( `${param.path}` ) );
-			pdfDoc.end();
-		
-			return true;
+			let date = new Date();
+			let path = `resources/relatorio_pedidos_${ date.getFullYear() }_${ date.getMonth() }_${ date.getDay() }_${ date.getHours() }_${date.getMinutes()}.pdf`;
+
+			// let writer = fs.createWriteStream( path );
+			// pdfDoc.pipe( writer );
+			// pdfDoc.end();
+			
+			let buffer = await new Promise( ( resolve, reject )=> {
+
+				let buffers = [];
+				pdfDoc.on( 'data', buffers.push.bind( buffers ) );
+				pdfDoc.on( 'end', ()=> resolve( Buffer.concat( buffers ) ) );
+				pdfDoc.end();
+
+
+
+			}).then( ( buffer )=> buffer );
+
+			//@ts-ignore
+			return buffer.toString( 'base64' );
+
 		}
 		catch( e )
 		{
-			return false;
+			//@ts-ignore
+			console.log( e.stack );
+			// return false;
 		}
 	}
 
@@ -96,8 +114,7 @@ class RelatorioPedidos
 
 		await Promise.all( pedido.pecasPedido.map( async( peca_pedido )=>
 		{
-				let peca  = await pecaTransaction.get( { id:peca_pedido.ref_peca } );
-
+				let peca  = await pecaTransaction.get( peca_pedido.ref_peca);
 				let marca = await marcaTransaction.get( <Number>peca.marca );
 				
 				innerTable.table.body.push( [ peca.id, peca.nome, marca.nome, peca_pedido.quantidade, "R$"+peca.valor_revenda?.replace( '.', ',' ) ] );

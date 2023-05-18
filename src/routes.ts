@@ -16,6 +16,9 @@ import { getPecaHandler, getPecasHandler } from "./controller/Peca.controller";
 import { createPedidoSchema } from "./schema/Pedido.schema";
 import { cancelPedidoHandler, concludePedidoHandler, createPedidoHandler, getAllPedidoHandler, getPedidoHandler } from "./controller/Pedido.controller";
 
+import { generateReportHandler } from "./reports/ReportsController";
+import { getReportSchema } from "./schema/Report.schema";
+
 import { loginPessoaHandler, refreshTokenHandler, logoutPessoaHandler } from "./controller/Auth.controller";
 import { validateJWT } from "./middleware/validateJWT";
 import cookieParser from "cookie-parser";
@@ -69,6 +72,9 @@ function routes ( app: Express )
 	app.get(  '/app/getpedidos', getAllPedidoHandler );
 	app.get(  '/app/concludepedido', concludePedidoHandler );
 	app.get(  '/app/cancelpedido', cancelPedidoHandler );
+
+
+	app.post( '/app/reports', validate( getReportSchema ), generateReportHandler )
 	
 }
 
