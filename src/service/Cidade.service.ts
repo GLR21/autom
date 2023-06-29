@@ -70,3 +70,17 @@ export async function updateCidade( input:Cidade )
 		throw new Error(e);
 	}
 }
+
+export async function getCidadeByIBGE( cod_ibge:any )
+{
+	try
+	{
+		let cidadeTransaction = new CidadeTransaction();
+		let cidade = await cidadeTransaction.getCidadeByIBGE( cod_ibge );
+		return cidade;
+	}
+	catch (e:any)
+	{
+		throw new Error(e);
+	}
+}

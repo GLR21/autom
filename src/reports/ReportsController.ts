@@ -7,12 +7,15 @@ import Logging from '../util/Logging';
 const RELATORIO_PECAS = 'RelatorioPecas';
 const RELATORIO_PEDIDOS = 'RelatorioPedidos';
 
-export async function generateReportHandler( req:Request<{},{},getReportSchema['body']>, res:Response )
+export async function generateReportHandler( req:Request, res:Response )
 {
 	try
 	{
 		let report;
 		let relatorio;
+
+
+		console.log( req.body );
 
 		switch( req.body.ref_report )
 		{
@@ -25,8 +28,6 @@ export async function generateReportHandler( req:Request<{},{},getReportSchema['
 				report = await relatorio.build( req.body );
 			break;
 		}
-
-		console.log( report );
 
 		return res.status( 200 ).send( report );
 	}

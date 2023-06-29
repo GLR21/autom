@@ -10,9 +10,10 @@ export interface Pessoa
     cep:string;
     rua:string;
     bairro:string;
-    numero_endereco:Number;
+    numero_endereco:string;
     ref_cidade:Number;
     tipo_pessoa?:Number|undefined;
+    complemento?:string|undefined;
 
 }
 

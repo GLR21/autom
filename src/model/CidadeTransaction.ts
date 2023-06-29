@@ -76,6 +76,19 @@ class CidadeTransaction
 			throw new Error(e);
 		}
 	}
+
+	async getCidadeByIBGE(parameter: any)
+	{
+		try
+		{
+			let query = `SELECT * FROM pm_cidade WHERE cod_ibge = '${parameter}'`;
+			return await super.query(query).then( (res) => { return res.rows[0] } ).catch( (e) => { throw e } );
+		}
+		catch(e:any)
+		{
+			throw new Error(e);
+		}
+	}
 }
 
 export { CidadeTransaction };

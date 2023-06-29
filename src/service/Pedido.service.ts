@@ -29,12 +29,12 @@ export async function getPedido( id:any )
 	}
 }
 
-export async function getAllPedidos()
+export async function getAllPedidos( param:any )
 {
 	try
 	{
 		let pedidosTransaction = new PedidosTransaction();
-		let pedidos = await pedidosTransaction.getAll();
+		let pedidos = await pedidosTransaction.getAll( param );
 		return pedidos;
 	}
 	catch (e:any)
@@ -63,6 +63,62 @@ export async function cancelPedido( id:any )
 	{
 		let pedidosTransaction = new PedidosTransaction();
 		let pedido = await pedidosTransaction.cancel( id );
+		return pedido;
+	}
+	catch (e:any)
+	{
+		throw new Error(e);
+	}
+}
+
+export async function openPedido( id:any )
+{
+	try
+	{
+		let pedidosTransaction = new PedidosTransaction();
+		let pedido = await pedidosTransaction.open( id );
+		return pedido;
+	}
+	catch (e:any)
+	{
+		throw new Error(e);
+	}
+}
+
+export async function updatePedido( input:Pedido )
+{
+	try
+	{
+		let pedidosTransaction = new PedidosTransaction();
+		let pedido = await pedidosTransaction.store( input );
+		return pedido;
+	}
+	catch (e:any)
+	{
+		throw new Error(e);
+	}
+}
+
+export async function exportPedidoASCSV( param:any )
+{
+	try
+	{
+		let pedidosTransaction = new PedidosTransaction();
+		let pedido = await pedidosTransaction.exportPedidoASCSV( param );
+		return pedido;
+	}
+	catch (e:any)
+	{
+		throw new Error(e);
+	}
+}
+
+export async function getQuantidadePedidosPorPessoa( param?:any )
+{
+	try
+	{
+		let pedidosTransaction = new PedidosTransaction();
+		let pedido = await pedidosTransaction.getQuantidadePedidosPorPessoa( param );
 		return pedido;
 	}
 	catch (e:any)

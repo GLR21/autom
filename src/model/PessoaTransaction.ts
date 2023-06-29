@@ -36,7 +36,8 @@ class PessoaTransaction
                     bairro,
                     numero_endereco,
                     ref_cidade,
-                    tipo_pessoa 
+                    tipo_pessoa,
+                    complemento
                 ) 
                 values 
                 ( 
@@ -50,7 +51,8 @@ class PessoaTransaction
                     '${pessoa.bairro}',
                     ${pessoa.numero_endereco},
                     '${pessoa.ref_cidade}',
-                    ${pessoa.tipo_pessoa}
+                    ${pessoa.tipo_pessoa},
+                    '${pessoa.complemento}'
                 ) RETURNING id`;
      
         try
@@ -67,14 +69,47 @@ class PessoaTransaction
                    
     }
 
-    async getAll()
+    async getAll( param?:any )
     {
-        let getAll = 'Select * from pm_pessoa order by id asc;';
+        let queryString = 'Select * from pm_pessoa ';
+
+        if( param != null && typeof param != 'undefined' && Object.keys( param ).length > 0 )
+		{
+			queryString += ' where ';
+
+			for( const key in param )
+			{
+				if( typeof param[key] == 'undefined' || param[key] == null || param[key] == '' )
+				{
+					continue;
+				}
+
+				switch( key )
+                {
+                    case 'nome':
+                    case 'email':
+                    case 'cep':
+                    case 'rua':
+                    case 'bairro':
+                    
+                        queryString += ` ${key} ilike '${param[key]}' and `;
+                    break;
+                    default:
+                        queryString += ` ${key} = ${param[key]} and `;
+                    break;
+                }
+                
+			}
+
+			// remove o ultimo and
+			queryString = queryString.substring( 0, queryString.length - 4 );
+
+		}
 
         try
         {
             return await super
-                        .query( getAll )
+                        .query( queryString+' ORDER BY id DESC;' )
                         .then
                         ( 
                             ( res )=>
@@ -100,7 +135,8 @@ class PessoaTransaction
                                                     "bairro": element.bairro,
                                                     "numero_endereco": element.numero_endereco,
                                                     "ref_cidade": element.ref_cidade,
-                                                    "tipo_pessoa": element.tipo_pessoa
+                                                    "tipo_pessoa": element.tipo_pessoa,
+                                                    "complemento": element.complemento
                                                 }
                                             );
                                         }
@@ -148,7 +184,8 @@ class PessoaTransaction
                                         "bairro": element.bairro,
                                         "numero_endereco": element.numero_endereco,
                                         "ref_cidade": element.ref_cidade,
-                                        "tipo_pessoa": element.tipo_pessoa
+                                        "tipo_pessoa": element.tipo_pessoa,
+                                        "complemento": element.complemento
                                     }       
                                 });
     
@@ -202,7 +239,8 @@ class PessoaTransaction
                             bairro='${pessoa.bairro}',
                             numero_endereco=${pessoa.numero_endereco},
                             ref_cidade='${pessoa.ref_cidade}',
-                            tipo_pessoa=${pessoa.tipo_pessoa}
+                            tipo_pessoa=${pessoa.tipo_pessoa},
+                            complemento='${pessoa.complemento}'
                         where id=${pessoa.id}`;
         
         try

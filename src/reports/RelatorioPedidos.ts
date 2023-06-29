@@ -18,6 +18,8 @@ class RelatorioPedidos
 		let pedidostransaction = new PedidosTransaction();
 		let pessoatransaction  = new PessoaTransaction();
 
+		delete param.ref_report;
+
 		let pedidosArr = await pedidostransaction.getAll( param );
 
 		var docDefinition = 
@@ -41,7 +43,6 @@ class RelatorioPedidos
 		var tableBody = docDefinition.content[0].table['body'];
 		try
 		{
-			
 			if( pedidosArr.length > 0 )
 			{
 				await Promise.all( pedidosArr.map( async(  pedido:any )=>
@@ -65,9 +66,6 @@ class RelatorioPedidos
 			let date = new Date();
 			let path = `resources/relatorio_pedidos_${ date.getFullYear() }_${ date.getMonth() }_${ date.getDay() }_${ date.getHours() }_${date.getMinutes()}.pdf`;
 
-			// let writer = fs.createWriteStream( path );
-			// pdfDoc.pipe( writer );
-			// pdfDoc.end();
 			
 			let buffer = await new Promise( ( resolve, reject )=> {
 
@@ -87,7 +85,7 @@ class RelatorioPedidos
 		catch( e )
 		{
 			//@ts-ignore
-			console.log( e.stack );
+			// console.log( e.stack );
 			// return false;
 		}
 	}

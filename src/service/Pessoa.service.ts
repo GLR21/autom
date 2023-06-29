@@ -32,12 +32,12 @@ export async function getPessoa( id:any )
 }
 
 
-export async function getAllPessoas()
+export async function getAllPessoas( param:any )
 {
 	try
 	{
 		let pessoaTransaction = new PessoaTransaction();
-		let pessoas = await pessoaTransaction.getAll();
+		let pessoas = await pessoaTransaction.getAll( param );
 		return pessoas;
 	}
 	catch (e:any)

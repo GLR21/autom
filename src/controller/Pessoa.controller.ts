@@ -35,7 +35,7 @@ export async function getAllPessoaHandler( req:Request, res:Response )
 {
 	try
 	{
-		const pessoas = await getAllPessoas();
+		const pessoas = await getAllPessoas( req.query );
 		return res.status( 200 ).send( pessoas );
 	}
 	catch ( err: any )
